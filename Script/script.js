@@ -140,6 +140,18 @@ const questionPool = [
         rationale: "ReactJS adalah library JavaScript untuk UI, bukan untuk Data Science Python."
     }
 ];
+
+// ==========================================
+// UTILITIES
+// ==========================================
+function shuffle(items) {
+    const array = [...items];
+    for (let idx = array.length - 1; idx > 0; idx -= 1) {
+        const swapIdx = Math.floor(Math.random() * (idx + 1));
+        [array[idx], array[swapIdx]] = [array[swapIdx], array[idx]];
+    }
+    return array;
+}
 // ==========================================
 // 2. STATE & CONFIG
 // ==========================================
@@ -205,7 +217,11 @@ function handleLogin(e) {
 }
 function initQuiz() {
     // Acak dan ambil 10 soal
-    activeQuestions = [...questionPool].sort(() => 0.5 - Math.random()).slice(0, 10);
+    const randomized = shuffle(questionPool).slice(0, 10).map((question) => ({
+        ...question,
+        options: question.options ? question.options.map((opt) => ({ ...opt })) : undefined
+    }));
+    activeQuestions = randomized;
     
     els.start.classList.add('hidden');
     els.quiz.classList.remove('hidden');
@@ -234,6 +250,9 @@ function loadQuestion() {
     const progressPct = ((currentQuestionIdx) / activeQuestions.length) * 100;
     els.progressBar.style.width = `${progressPct}%`;
     // Render berdasarkan Tipe Soal
+    if (data.options && (data.type === 'mc' || data.type === 'multi')) {
+        data.options = shuffle(data.options).map((opt) => ({ ...opt }));
+    }
     renderOptions(data);
 }
 function renderOptions(data) {
