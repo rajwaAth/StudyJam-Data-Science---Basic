@@ -520,19 +520,8 @@ function saveToSpreadsheet() {
     })
     .catch(err => {
         console.error(err);
-        status.innerHTML = `<span class="text-red-500">Gagal koneksi. Coba lagi/Download CSV.</span>`;
+        status.innerHTML = `<span class="text-red-500">Gagal koneksi. Kasih tau ke mentor yaa😊.</span>`;
         btn.disabled = false;
         btn.innerHTML = `<i class="fab fa-google-drive"></i> Simpan ke Spreadsheet`;
     });
-}
-function downloadCSV() {
-    const date = new Date().toLocaleString();
-    const csvContent = `data:text/csv;charset=utf-8,Nama,NPM,Skor,Waktu\n"${userData.nama}","${userData.npm}","${score}","${date}"`;
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Quiz_DSC_${userData.nama.split(' ')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
 }
