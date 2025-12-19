@@ -1,0 +1,257 @@
+/* =========================================================
+   Global Theme Helpers (DSC Palette + Animations)
+   ========================================================= */
+
+:root {
+    --dsc-blue: #4285f4;
+    --dsc-red: #db4437;
+    --dsc-yellow: #f4b400;
+    --dsc-green: #0f9d58;
+    --body-bg: rgba(248, 249, 250, 1);
+}
+
+.dsc-blue {
+    color: var(--dsc-blue);
+}
+
+.text-dsc-blue {
+    color: var(--dsc-blue);
+}
+
+.bg-dsc-blue {
+    background-color: var(--dsc-blue);
+}
+
+.dsc-red {
+    color: var(--dsc-red);
+}
+
+.text-dsc-red {
+    color: var(--dsc-red);
+}
+
+.bg-dsc-red {
+    background-color: var(--dsc-red);
+}
+
+.text-dsc-yellow {
+    color: var(--dsc-yellow);
+}
+
+.bg-dsc-yellow {
+    background-color: var(--dsc-yellow);
+}
+
+.text-dsc-green {
+    color: var(--dsc-green);
+}
+
+.bg-dsc-green {
+    background-color: var(--dsc-green);
+}
+
+body {
+    font-family: 'Google Sans', 'Inter', 'Segoe UI', sans-serif;
+    background: radial-gradient(120% 120% at 20% 20%, rgba(66, 133, 244, 0.18), transparent),
+        radial-gradient(120% 120% at 80% 0%, rgba(244, 180, 0, 0.14), transparent),
+        var(--body-bg);
+    color: #1f2933;
+    transition: background 0.6s ease;
+}
+
+#app {
+    margin: 0 auto;
+    box-shadow: 0 40px 80px -40px rgba(15, 24, 46, 0.25);
+    transition: transform 0.3s ease;
+}
+
+#app.shake {
+    animation: shake 0.5s;
+}
+
+.fade-in {
+    animation: fadeIn 0.45s ease-out both;
+}
+
+.slide-up {
+    animation: slideUp 0.45s ease-out both;
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.45s ease-out both;
+}
+
+.option-btn {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.option-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px -16px rgba(66, 133, 244, 0.6);
+}
+
+.option-btn:focus-visible {
+    outline: 3px solid rgba(66, 133, 244, 0.35);
+    outline-offset: 4px;
+}
+
+.option-multi {
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.option-multi .option-indicator {
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.option-multi .option-indicator i {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    color: inherit;
+}
+
+.option-multi.selected {
+    border-color: rgba(244, 180, 0, 0.6);
+    background-color: rgba(255, 248, 225, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px -18px rgba(244, 180, 0, 0.7);
+}
+
+.option-multi.selected .option-indicator {
+    border-color: var(--dsc-yellow);
+    background-color: var(--dsc-yellow);
+    color: white;
+}
+
+.option-multi.selected .option-indicator i {
+    opacity: 1;
+}
+
+.option-multi.selected span {
+    color: #9a6b05;
+}
+
+.option-multi:focus-within {
+    outline: 3px solid rgba(244, 180, 0, 0.3);
+    outline-offset: 4px;
+}
+
+#feedback-section {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#feedback-section:not(.hidden) {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.multi-warning {
+    color: var(--dsc-red);
+    font-size: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(15, 24, 46, 0.05);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(66, 133, 244, 0.55);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(66, 133, 244, 0.75);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shake {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    20% {
+        transform: translateX(-6px);
+    }
+    40% {
+        transform: translateX(6px);
+    }
+    60% {
+        transform: translateX(-4px);
+    }
+    80% {
+        transform: translateX(4px);
+    }
+}
+
+/* =========================================================
+   Responsive Tweaks
+   ========================================================= */
+
+@media (max-width: 1024px) {
+    #app {
+        border-radius: 28px;
+    }
+}
+
+@media (max-width: 768px) {
+    #app {
+        border-radius: 24px;
+    }
+
+    body {
+        background-position: 0 0;
+    }
+}
+
+@media (max-width: 640px) {
+    #app {
+        border-radius: 22px;
+    }
+
+    body {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(248, 249, 250, 1) 60%);
+    }
+
+    #feedback-section {
+        margin-top: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    #app {
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+}
