@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Data Science - Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start lg:justify-center p-4 sm:p-6 lg:p-8">
+
+    <!-- Audio Effects -->
+    <audio id="sound-correct" src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3"></audio>
+    <audio id="sound-wrong" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3"></audio>
+    <audio id="sound-win" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3"></audio>
+
+    <div id="app" class="w-full max-w-3xl bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-200 relative">
+        <!-- Top Decoration Line -->
+        <div class="h-2 flex w-full">
+            <div class="h-full w-1/4 bg-dsc-blue"></div>
+            <div class="h-full w-1/4 bg-dsc-red"></div>
+            <div class="h-full w-1/4 bg-dsc-yellow"></div>
+            <div class="h-full w-1/4 bg-dsc-green"></div>
+        </div>
+
+        <!-- Header -->
+        <div class="p-5 sm:p-6 md:p-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 bg-white relative z-10 border-b border-gray-100">
+            <div class="flex items-center gap-4">
+                <div class="bg-gray-100 p-3 rounded-full">
+                    <i class="fas fa-code text-2xl text-gray-600"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 tracking-tight">Data Science Quiz</h1>
+                    <p class="text-xs sm:text-sm text-gray-500 font-medium">Developer Student Clubs Series</p>
+                </div>
+            </div>
+            <div id="user-badge" class="text-right">
+                <div class="bg-blue-50 text-dsc-blue px-4 py-1.5 rounded-full text-xs font-bold shadow-sm border border-blue-100">
+                    <i class="fas fa-user mr-2"></i><span id="display-nama">User</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="relative min-h-[400px]">
+
+            <!-- QUIZ CONTAINER -->
+            <div id="quiz-container" class="flex flex-col h-full fade-in">
+                <!-- Progress Header -->
+                <div class="px-5 sm:px-8 py-3 sm:py-4 bg-gray-50 flex flex-col sm:flex-row sm:justify-between gap-3 sm:items-center border-b border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <span class="bg-white border border-gray-200 text-gray-600 px-3 py-1 rounded-lg text-xs font-bold shadow-sm">
+                            <i class="fas fa-list-ol mr-1 text-gray-400"></i> Soal <span id="q-number">1</span>/<span id="total-q">0</span>
+                        </span>
+                        <span id="type-badge" class="px-3 py-1 rounded-lg text-xs font-bold bg-blue-100 text-dsc-blue">Pilihan Ganda</span>
+                    </div>
+                    <div class="font-bold text-gray-700 text-sm bg-white px-4 py-1 rounded-lg border border-gray-200 shadow-sm">
+                        Skor: <span id="current-score" class="text-dsc-green">0</span>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full h-1.5 bg-gray-100">
+                    <div id="progress-bar" class="h-full bg-gradient-to-r from-blue-400 via-red-400 to-yellow-400 transition-all duration-500 rounded-r-full" style="width: 0%"></div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-5 sm:p-6 md:p-8 scroll-smooth pb-28 sm:pb-24">
+                    <h3 id="question-text" class="text-xl sm:text-2xl font-bold text-gray-800 leading-relaxed mb-6 sm:mb-8 slide-up">Loading...</h3>
+
+                    <div id="options-container" class="space-y-4 max-w-2xl slide-up"></div>
+
+                    <div id="feedback-section" class="hidden mt-8 p-5 rounded-2xl border-l-4 animate-fadeIn shadow-sm">
+                        <div class="flex gap-4">
+                            <div id="feedback-icon" class="text-2xl pt-1"></div>
+                            <div>
+                                <h4 id="feedback-title" class="font-bold text-lg mb-1"></h4>
+                                <p id="feedback-text" class="text-gray-600 text-sm leading-relaxed"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sticky bottom-0 left-0 w-full p-4 sm:p-5 bg-white/95 backdrop-blur border-t border-gray-100 flex flex-col sm:flex-row sm:justify-end gap-3 items-stretch sm:items-center z-20">
+                    <button id="check-btn" class="hidden bg-gray-800 text-white hover:bg-black font-bold py-3 px-6 sm:px-8 rounded-xl shadow-lg transition transform hover:-translate-y-1">
+                        Periksa Jawaban
+                    </button>
+                    <button id="next-btn" class="hidden bg-dsc-blue text-white hover:bg-blue-600 font-bold py-3 px-6 sm:px-8 rounded-xl shadow-lg shadow-blue-200 transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                        Lanjut <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- RESULT SCREEN -->
+            <div id="result-screen" class="hidden p-6 sm:p-8 md:p-12 text-center fade-in">
+                <div id="result-header" class="mb-6">
+                    <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-yellow-50 text-dsc-yellow mb-4 shadow-sm border border-yellow-100">
+                        <i class="fas fa-trophy text-4xl"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800">Kuis Selesai!</h2>
+                    <p id="result-message" class="text-gray-500 mt-2">Hebat, Anda telah menyelesaikan semua tantangan.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-lg mx-auto mb-10">
+                    <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                        <span class="block text-3xl font-bold text-dsc-blue mb-1" id="final-score">0</span>
+                        <span class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">Total Skor</span>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-2xl border border-green-100">
+                        <span class="block text-3xl font-bold text-dsc-green mb-1" id="correct-count">0</span>
+                        <span class="text-[10px] text-green-500 font-bold uppercase tracking-wider">Benar</span>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-2xl border border-red-100">
+                        <span class="block text-3xl font-bold text-dsc-red mb-1" id="wrong-count">0</span>
+                        <span class="text-[10px] text-red-400 font-bold uppercase tracking-wider">Salah</span>
+                    </div>
+                </div>
+
+                <div class="space-y-3 max-w-xs mx-auto w-full">
+                    <div id="upload-status" class="text-xs text-center min-h-[20px] mb-2 font-mono font-medium"></div>
+
+                    <button id="btn-save" class="w-full bg-dsc-green hover:bg-green-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-green-100 transition flex items-center justify-center gap-2">
+                        <i class="fab fa-google-drive"></i> Submit Nilai
+                    </button>
+
+                    <button id="btn-back" class="w-full text-dsc-blue hover:text-blue-700 font-semibold py-3 text-sm mt-2">
+                        Kembali ke Login
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Question banks -->
+    <script src="Script/weeks/week1.js"></script>
+    <script src="Script/weeks/week2.js"></script>
+
+    <!-- Quiz runtime -->
+    <script src="Script/quizCore.js"></script>
+    <script src="Script/quiz.js"></script>
+</body>
+</html>
