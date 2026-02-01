@@ -1,7 +1,8 @@
 (function () {
     const QUESTIONS_PER_WEEK = {
         1: 10,
-        2: 10
+        2: 10,
+        3: 10
     };
 
     function safeParseJson(value) {
@@ -24,7 +25,8 @@
 
     const pools = {
         1: window.questionPoolWeek1,
-        2: window.questionPoolWeek2
+        2: window.questionPoolWeek2,
+        3: window.questionPoolWeek3
     };
 
     const pool = pools[week];

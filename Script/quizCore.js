@@ -133,6 +133,7 @@ function renderOptions(data) {
         case 'multi': badgeText = 'Centang Banyak'; badgeColor = 'bg-yellow-100 text-yellow-700'; break;
         case 'text': badgeText = 'Isian Singkat'; badgeColor = 'bg-purple-100 text-purple-600'; break;
         case 'match': badgeText = 'Menjodohkan'; badgeColor = 'bg-indigo-100 text-indigo-700'; break;
+        case 'order': badgeText = 'Urutan (Drag & Drop)'; badgeColor = 'bg-orange-100 text-orange-700'; break;
         default: badgeText = 'Soal'; badgeColor = 'bg-gray-100 text-gray-700';
     }
 
@@ -267,6 +268,88 @@ function renderOptions(data) {
         wrapper.appendChild(leftCard);
         wrapper.appendChild(rightCard);
         els.optionsContainer.appendChild(wrapper);
+
+        if (els.checkBtn) {
+            els.checkBtn.classList.remove('hidden');
+            els.checkBtn.innerText = 'Kirim Jawaban';
+            els.checkBtn.onclick = () => checkManualAnswer();
+        }
+    }
+
+    if (data.type === 'order') {
+        const container = document.createElement('div');
+        container.className = 'p-5 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50';
+        container.innerHTML = '<div class="text-sm font-semibold text-gray-600 mb-4"><i class="fas fa-hand-paper mr-2"></i>Seret dan atur urutan item di bawah ini:</div>';
+
+        const droppableList = document.createElement('div');
+        droppableList.id = 'order-list';
+        droppableList.className = 'space-y-3';
+
+        // Shuffle items for display
+        const shuffledItems = shuffle([...data.items]);
+        
+        shuffledItems.forEach((item) => {
+            const itemEl = document.createElement('div');
+            itemEl.className = 'order-item p-4 rounded-xl bg-white border-2 border-gray-200 cursor-move hover:border-dsc-blue hover:shadow-md transition-all flex items-center gap-3 shadow-sm';
+            itemEl.draggable = true;
+            itemEl.setAttribute('data-id', item.id);
+            itemEl.innerHTML = `
+                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-dsc-blue font-bold flex items-center justify-center text-sm">
+                    <i class="fas fa-grip-vertical text-gray-400"></i>
+                </div>
+                <div class="flex-1 font-medium text-gray-800">${item.text}</div>
+            `;
+
+            itemEl.addEventListener('dragstart', (e) => {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', itemEl.innerHTML);
+                itemEl.classList.add('opacity-50');
+            });
+
+            itemEl.addEventListener('dragend', () => {
+                itemEl.classList.remove('opacity-50');
+            });
+
+            itemEl.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                if (itemEl !== draggingItem) {
+                    itemEl.classList.add('border-dsc-blue', 'bg-blue-50');
+                }
+            });
+
+            itemEl.addEventListener('dragleave', () => {
+                itemEl.classList.remove('border-dsc-blue', 'bg-blue-50');
+            });
+
+            itemEl.addEventListener('drop', (e) => {
+                e.preventDefault();
+                itemEl.classList.remove('border-dsc-blue', 'bg-blue-50');
+                if (itemEl !== draggingItem && draggingItem) {
+                    const allItems = Array.from(droppableList.querySelectorAll('.order-item'));
+                    const draggedIndex = allItems.indexOf(draggingItem);
+                    const targetIndex = allItems.indexOf(itemEl);
+                    
+                    if (draggedIndex < targetIndex) {
+                        itemEl.parentNode.insertBefore(draggingItem, itemEl.nextSibling);
+                    } else {
+                        itemEl.parentNode.insertBefore(draggingItem, itemEl);
+                    }
+                }
+            });
+
+            droppableList.appendChild(itemEl);
+        });
+
+        let draggingItem = null;
+        droppableList.addEventListener('dragstart', (e) => {
+            if (e.target.classList.contains('order-item')) {
+                draggingItem = e.target;
+            }
+        });
+
+        container.appendChild(droppableList);
+        els.optionsContainer.appendChild(container);
 
         if (els.checkBtn) {
             els.checkBtn.classList.remove('hidden');
@@ -465,6 +548,29 @@ function checkManualAnswer() {
 
         const rationale = data.rationale || 'Cocokkan setiap item di sisi kiri dengan deskripsinya di sisi kanan.';
         showFeedback(allCorrect, rationale);
+    }
+
+    if (data.type === 'order') {
+        const orderItems = els.optionsContainer?.querySelectorAll('.order-item') || [];
+        const userOrder = Array.from(orderItems).map((item) => item.getAttribute('data-id'));
+        const expectedOrder = data.correctOrder || [];
+        
+        let allCorrect = true;
+        orderItems.forEach((item, idx) => {
+            item.style.pointerEvents = 'none';
+            const isCorrect = userOrder[idx] === expectedOrder[idx];
+            
+            if (isCorrect) {
+                item.classList.add('border-dsc-green', 'bg-green-50');
+                item.querySelector('.fa-grip-vertical')?.classList.replace('fa-grip-vertical', 'fa-check');
+            } else {
+                item.classList.add('border-dsc-red', 'bg-red-50');
+                item.querySelector('.fa-grip-vertical')?.classList.replace('fa-grip-vertical', 'fa-times');
+                allCorrect = false;
+            }
+        });
+
+        showFeedback(allCorrect, data.rationale);
     }
 }
 
